@@ -1,0 +1,33 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<form id="form-update" class="form-horizontal"
+      th:fragment="update_form"
+      th:object="${formData}">
+    <div class="card-body">
+        <div class="form-group row">
+            <label for="id" class="col-sm-2 col-form-label">Id</label>
+            <div class="col-sm-10">
+                <input th:field="*{id}" type="text" class="form-control" placeholder="Id">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+                <input th:field="*{name}" type="text" class="form-control" placeholder="Name">
+            </div>
+            <small class="text-red" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></small>
+        </div>
+        <div class="form-group row">
+            <label for="age" class="col-sm-2 col-form-label">Age</label>
+            <div class="col-sm-10">
+                <input th:field="*{age}" type="text" class="form-control" placeholder="Age">
+            </div>
+            <small class="text-red" th:if="${#fields.hasErrors('age')}" th:errors="*{age}"></small>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button id="btn-create-close" type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+            <button id="btn-create-confirm" type="submit" class="btn btn-primary">確定</button>
+        </div>
+    </div>
+</form>
+</html>

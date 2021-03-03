@@ -1,0 +1,31 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="/modal/modal_form_query">
+<form id="form-query" class="form-horizontal" layout:fragment="form_content">
+    <div class="card-body">
+        <div class="form-group row">
+            <label for="id" class="col-sm-2 col-form-label">Id</label>
+            <div class="col-sm-10">
+                <input name="id" type="text" class="form-control" id="id" placeholder="Id">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">Name</label>
+            <div class="col-sm-10">
+                <input name="name" type="text" class="form-control" id="name" placeholder="Name">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="age" class="col-sm-2 col-form-label">Age</label>
+            <div class="col-sm-10">
+                <input name="age" type="text" class="form-control" id="age" placeholder="Age">
+            </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button id="btn-query-close" type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+            <button id="btn-query-confirm" type="submit" class="btn btn-primary">確定</button>
+        </div>
+    </div>
+</form>
+</html>

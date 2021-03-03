@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/my-layout">
+
+<head>
+</head>
+
+<body>
+<div class="container-fluid" layout:fragment="content">
+    <div class="row">
+        <div class="col-12">
+            <!-- Default box -->
+            <div class="card card-outline card-primary">
+                <button
+                        type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-form-query">
+                    查詢
+                </button>
+                <button id="btn_show_create" type="button" class="btn btn-default">新增</button>
+                <div class="card-header">
+                    <h3 class="card-title">資料列表</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="datalist" class="table table-bordered table-hover display">
+                        <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                            <th>Age</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div th:replace="/resources/datatable"></div>
+    <div th:replace="/student_form_query"></div>
+    <div th:replace="/modal/modal_form"></div>
+    <!--    <div th:replace="/student_form_detail"></div>-->
+    <!--    <div th:replace="/student_form_create"></div>-->
+
+    <!-- page script -->
+    <script>
+        var formModal;
+        var queryFormModal
+        // $(function () {
+        formModal = $('#modal-form');
+        queryFormModal = $('#modal-form-query');
+
+        var dataTable = $('#datalist').DataTable({
+            "autoWidth": false,
+            serverSide: true,
+            ajax: {
+                contentType: 'application/json',
+                type: 'POST',
+                // url: '/api/student/search',
+                url: '/student/dt/search',
+                data: function (d) {
+                    return JSON.stringify(d);
+                }
+            },
+            "columns": [
+                {
+                    data: "id"
+                },
+                {
+                    data: "name",
+                },
+                {
+                    data: "age"
+                },
+                {
+                    //這裡的data變數值為sysid，相等於row.sysid
+                    data: "id",//資料行繫結屬性
+                    orderable: false, // 禁用排序
+                    render: function (data, type, row, meta) {
+                        //row指的是資料列物件 data變數相等於row.sysid
+                        return "<button id='btn-show-detail' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(" + data + ")' >detail</button>" + "<button id='btn-show-update' type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(" + data + ")' >update</button>";
+
+                    }
+                }
+            ]
+        });
+
+        var inputId = $('#form-query input#id');
+        var inputName = $('#form-query input#name');
+        var inputAge = $('#form-query input#age');
+
+        var onInputIdChange = function () {
+            console.log("onInputIdChange");
+            dataTable.column(0).search(inputId.val())
+        };
+        var onInputNameChange = function () {
+            console.log("onInputNameChange");
+            dataTable.column(1).search(inputName.val())
+        };
+        var onInputAgeChange = function () {
+            console.log("onInputAgeChange");
+            dataTable.column(2).search(inputAge.val())
+        };
+
+
+        inputId.on('change', onInputIdChange);
+        inputName.on('change', onInputNameChange);
+        inputAge.on('change', onInputAgeChange);
+
+        // btnQueryConfirm.submit(onBtnQueryConfirmSubmit);
+        // btnCreateConfirm.submit(onBtnCreateConfirmSubmit);
+
+
+        $('#form-query').submit(function (e) {
+            console.log("onBtnQueryConfirmSubmit");
+            dataTable.draw();
+            queryFormModal.modal('hide');
+            e.preventDefault();
+        });
+
+        $('#btn_show_create').click(function (e) {
+            showCreateView();
+        });
+
+
+        // });
+
+        var onBtnCreateConfirmSubmit = function (e) {
+            $.ajax({
+                type: "POST",
+                url: '/student',
+                data: $(this).serialize(), // serializes the form's elements.
+                success: function (data, textStatus, xhr) {
+                    // console.log(data);
+                    // console.log(textStatus);
+                    // console.log(xhr.getResponseHeader("content-type") );
+                    let ct = xhr.getResponseHeader("content-type")
+                    if (ct.indexOf('html') > -1) {
+                        appendCreateFormHtml(data);
+                    }
+                    if (ct.indexOf('json') > -1) {
+                        // handle json here
+                        let json = data;
+                        showSuccessToast('新增成功');
+                        showDetailView(json.payload);
+                        dataTable.ajax.reload();
+                    }
+                }
+            });
+            e.preventDefault();
+        }
+        var onBtnUpdateConfirmSubmit = function (e) {
+            $.ajax({
+                type: "PUT",
+                url: '/student/' + $(this).find('#id').val(),
+                data: $(this).serialize(), // serializes the form's elements.
+                success: function (data, textStatus, xhr) {
+                    console.log(data);
+                    console.log(textStatus);
+                    console.log(xhr.getResponseHeader("content-type") );
+                    let ct = xhr.getResponseHeader("content-type")
+                    if (ct.indexOf('html') > -1) {
+                        appendUpdateFormHtml(data);
+                    }
+                    if (ct.indexOf('json') > -1) {
+                        let json = data;
+                        showSuccessToast('修改成功');
+                        showDetailView(json.payload);
+                        dataTable.ajax.reload();
+                    }
+                }
+            });
+            e.preventDefault();
+        }
+
+        function appendCreateFormHtml(data) {
+            $('#modal-body-form').html(data);
+            $('#form-create').bind("submit", onBtnCreateConfirmSubmit);
+        }
+
+        function appendDetailFormHtml(data) {
+            $('#modal-body-form').html(data);
+        }
+
+        function appendUpdateFormHtml(data) {
+            $('#modal-body-form').html(data);
+            $('#form-update').bind("submit", onBtnUpdateConfirmSubmit);
+        }
+
+        function showCreateView() {
+            $.get('/student/create')
+                .done(function (data) {
+                    console.log(data);
+                    appendCreateFormHtml(data);
+                    formModal.modal('show');
+                });
+        }
+
+        function showDetailView(id) {
+            $.get('/student/' + id, function (data) {
+                console.log(data);
+            })
+                .done(function (data) {
+                    console.log(data);
+                    appendDetailFormHtml(data);
+                    formModal.modal('show');
+                });
+        }
+
+        function showUpdateView(id) {
+            $.get('/student/' + id + '/update', function (data) {
+                console.log(data);
+            })
+                .done(function (data) {
+                    console.log(data);
+                    appendUpdateFormHtml(data);
+                    formModal.modal('show');
+                });
+        }
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        function showSuccessToast(title) {
+            console.log(title);
+            Toast.fire({
+                icon: 'success',
+                title: title
+            })
+        }
+
+    </script>
+</div>
+</body>
+
+
+</html>
