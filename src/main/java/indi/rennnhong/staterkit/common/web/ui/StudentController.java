@@ -44,14 +44,14 @@ public class StudentController {
     public String showDetailView(@PathVariable("id") Long id, Model model) {
         Student student = studentService.findOneById(id);
         model.addAttribute("student", student);
-        return "/student_form_detail :: detail_form";
+        return "student_form_detail :: detail_form";
     }
 
     @GetMapping("/create")
     public String showCreateView(Model model) {
         StudentCreateCommand formData = new StudentCreateCommand();
         model.addAttribute("formData", formData);
-        return "/student_form_create :: create_form";
+        return "student_form_create :: create_form";
     }
 
     @GetMapping("{id}/update")
@@ -60,7 +60,7 @@ public class StudentController {
         StudentUpdateCommand formData = new StudentUpdateCommand();
         BeanUtils.copyProperties(student, formData);
         model.addAttribute("formData", formData);
-        return "/student_form_update :: update_form";
+        return "student_form_update :: update_form";
     }
 
     @PostMapping
@@ -78,7 +78,7 @@ public class StudentController {
             request.setAttribute("id", student.getId());
             return "forward:/student/create/success";
         }
-        return "/student_form_create :: create_form";
+        return "student_form_create :: create_form";
     }
 
     @PutMapping("{id}")
@@ -96,7 +96,7 @@ public class StudentController {
             return "forward:/student/update/success";
         }
 
-        return "/student_form_update :: update_form";
+        return "student_form_update :: update_form";
     }
 
     @PostMapping(value = "/create/success", produces = MediaType.APPLICATION_JSON_VALUE)
