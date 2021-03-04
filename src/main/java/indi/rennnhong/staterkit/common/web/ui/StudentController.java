@@ -28,7 +28,7 @@ import java.util.Objects;
 import static org.springframework.util.StringUtils.hasText;
 
 @Controller
-@RequestMapping("student")
+@RequestMapping(value = {"student","/",""})
 public class StudentController {
     @GetMapping
     public String page(Model model) {
