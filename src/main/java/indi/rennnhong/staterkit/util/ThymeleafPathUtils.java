@@ -9,18 +9,33 @@ public class ThymeleafPathUtils {
         CREATE, DETAIL, UPDATE
     }
 
+    public static String buildPath(String modulePath) {
+        return MessageFormat.format("{0}/{1}", ROOT_PATH, modulePath);
+    }
+
+    public static String buildViewPath(String modulePath, String path) {
+        String txtTemplate = "{0}/{1}";
+        return MessageFormat.format(txtTemplate, buildPath(modulePath), path);
+    }
+
     public static String buildViewPath(String modulePath, FormType formType) {
-        String txtTemplate = "{0}/{1}_form_{2}";
+        String txtTemplate = "{0}_form_{1}";
         switch (formType) {
             case CREATE:
-                return MessageFormat.format(txtTemplate, buildPath(modulePath), modulePath, "create");
+                return MessageFormat.format(txtTemplate, buildViewPath(modulePath, modulePath), "create");
             case UPDATE:
-                return MessageFormat.format(txtTemplate, buildPath(modulePath), modulePath, "update");
+                return MessageFormat.format(txtTemplate, buildViewPath(modulePath, modulePath), "update");
             case DETAIL:
-                return MessageFormat.format(txtTemplate, buildPath(modulePath), modulePath, "detail");
+                return MessageFormat.format(txtTemplate, buildViewPath(modulePath, modulePath), "detail");
 
         }
         return "";
+    }
+
+    public static String buildFragmentPath(String modulePath, String path) {
+        String txtTemplate = "{0} :: {1}";
+        return MessageFormat.format(txtTemplate, buildViewPath(modulePath, modulePath), path);
+
     }
 
     public static String buildFragmentPath(String modulePath, FormType formType) {
@@ -37,7 +52,21 @@ public class ThymeleafPathUtils {
         return "";
     }
 
-    public static String buildPath(String modulePath) {
-        return MessageFormat.format("{0}/{1}", ROOT_PATH, modulePath);
+    public static void main(String[] args) {
+        String modulePath = "student";
+
+        System.out.println(buildPath(modulePath));
+        System.out.println(buildViewPath(modulePath,"my-view"));
+
+        System.out.println(buildViewPath(modulePath,FormType.CREATE));
+        System.out.println(buildViewPath(modulePath,FormType.UPDATE));
+        System.out.println(buildViewPath(modulePath,FormType.DETAIL));
+
+        System.out.println(buildFragmentPath(modulePath,"my-fragment"));
+
+        System.out.println(buildFragmentPath(modulePath,FormType.CREATE));
+        System.out.println(buildFragmentPath(modulePath,FormType.UPDATE));
+        System.out.println(buildFragmentPath(modulePath,FormType.DETAIL));
     }
+
 }

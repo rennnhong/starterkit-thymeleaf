@@ -34,16 +34,15 @@ public class DtRepositoryDispatcher {
         Type paramGenericType = ((ParameterizedType) genericInterfaces[0]).getActualTypeArguments()[0];
         Class paramGenericType1 = (Class) paramGenericType;
         String entityName = paramGenericType1.getSimpleName();
-        System.out.println(entityName + SUFFIX);
         DataTablesRepository dataTablesRepository = dataTableRepositories.get(entityName.toLowerCase() + SUFFIX);
         return dataTablesRepository.findAll(input, specification);
     }
 
 
-    public void showMap() {
-        for (Map.Entry<String, DataTablesRepository> entry : dataTableRepositories.entrySet()) {
-            System.out.println(MessageFormat.format("key={0}, value={1}", entry.getKey(), entry.getValue()));
-        }
-    }
+//    public void showMap() {
+//        for (Map.Entry<String, DataTablesRepository> entry : dataTableRepositories.entrySet()) {
+//            System.out.println(MessageFormat.format("key={0}, value={1}", entry.getKey(), entry.getValue()));
+//        }
+//    }
 
 }

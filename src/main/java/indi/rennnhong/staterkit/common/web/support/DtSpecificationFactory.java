@@ -83,13 +83,13 @@ public class DtSpecificationFactory {
             }
 
         }
-        for (Map.Entry<String, Map<String, String>> entry : dtSpecificationMap.entrySet()) {
-            String controllerName = entry.getKey();
-            Map<String, String> dtSpecifications = entry.getValue();
-            System.out.println(controllerName);
-            dtSpecifications.entrySet().forEach(x -> System.out.println("-" + x));
-            System.out.println("--------------------------------------------------------------");
-        }
+//        for (Map.Entry<String, Map<String, String>> entry : dtSpecificationMap.entrySet()) {
+//            String controllerName = entry.getKey();
+//            Map<String, String> dtSpecifications = entry.getValue();
+//            System.out.println(controllerName);
+//            dtSpecifications.entrySet().forEach(x -> System.out.println("-" + x));
+//            System.out.println("--------------------------------------------------------------");
+//        }
 
     }
 

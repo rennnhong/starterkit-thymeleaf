@@ -59,7 +59,6 @@ public class StudentController {
     public String showDetailView(@PathVariable("id") Long id, Model model) {
         Student student = studentService.findOneById(id);
         model.addAttribute("student", student);
-//        return "student_form_detail :: detail_form";
         return ThymeleafPathUtils.buildFragmentPath(modulePath, DETAIL);
     }
 
@@ -89,12 +88,10 @@ public class StudentController {
             Student student = new Student();
             BeanUtils.copyProperties(formData, student);
             studentService.create(student);
-//            model.addAttribute("student", student);
-//            return "/student_form_detail :: detail_form";
             request.setAttribute("id", student.getId());
             return "forward:/student/create/success";
         }
-        return "student_form_create :: create_form";
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, CREATE);
     }
 
     @PutMapping("{id}")
@@ -112,7 +109,7 @@ public class StudentController {
             return "forward:/student/update/success";
         }
 
-        return "student_form_update :: update_form";
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, UPDATE);
     }
 
     @PostMapping(value = "/create/success", produces = MediaType.APPLICATION_JSON_VALUE)
