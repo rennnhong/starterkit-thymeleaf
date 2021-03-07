@@ -7,8 +7,10 @@ import indi.rennnhong.staterkit.module.student.model.entity.Student;
 import indi.rennnhong.staterkit.module.student.service.StudentService;
 import indi.rennnhong.staterkit.module.student.web.command.StudentCreateCommand;
 import indi.rennnhong.staterkit.module.student.web.command.StudentUpdateCommand;
+import indi.rennnhong.staterkit.util.ThymeleafPathUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -25,20 +27,28 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 
+import static indi.rennnhong.staterkit.util.ThymeleafPathUtils.FormType.*;
 import static org.springframework.util.StringUtils.hasText;
 
 @Controller
 @RequestMapping(value = {"student", "/", ""})
 public class StudentController {
+
+    @Value("${custom.ui.thymeleaf.root-path}")
+    private String basePath;
+
+    @Value("student")
+    private String modulePath;
+
+
+    private StudentService studentService;
+
     @GetMapping
     public String page(Model model) {
         String[] path = {"level1", "level2", "level3"};
         model.addAttribute("list", Lists.newArrayList(path));
-        return "student";
+        return ThymeleafPathUtils.buildPath(modulePath) + "/" + modulePath;
     }
-
-
-    private StudentService studentService;
 
     @Autowired
     public void setStudentService(StudentService studentService) {
@@ -49,14 +59,15 @@ public class StudentController {
     public String showDetailView(@PathVariable("id") Long id, Model model) {
         Student student = studentService.findOneById(id);
         model.addAttribute("student", student);
-        return "student_form_detail :: detail_form";
+//        return "student_form_detail :: detail_form";
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, DETAIL);
     }
 
     @GetMapping("/create")
     public String showCreateView(Model model) {
         StudentCreateCommand formData = new StudentCreateCommand();
         model.addAttribute("formData", formData);
-        return "student_form_create :: create_form";
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, CREATE);
     }
 
     @GetMapping("{id}/update")
@@ -65,7 +76,7 @@ public class StudentController {
         StudentUpdateCommand formData = new StudentUpdateCommand();
         BeanUtils.copyProperties(student, formData);
         model.addAttribute("formData", formData);
-        return "student_form_update :: update_form";
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, UPDATE);
     }
 
     @PostMapping
