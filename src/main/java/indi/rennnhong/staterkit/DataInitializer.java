@@ -1,8 +1,8 @@
 package indi.rennnhong.staterkit;
 
 import com.github.javafaker.Faker;
-import indi.rennnhong.staterkit.common.model.entity.Student;
-import indi.rennnhong.staterkit.common.repository.StudentRepository;
+import indi.rennnhong.staterkit.module.student.model.entity.Student;
+import indi.rennnhong.staterkit.module.student.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class DataInitializer {
             Student student = new Student();
 //            student.setId(i);
             student.setName(faker.name().name());
-            student.setAge(faker.number().numberBetween(10,50));
+            student.setAge(faker.number().numberBetween(10, 50));
             studentRepository.save(student);
         }
 

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorator="layout/my-layout">
+      layout:decorator="layout/layout">
 
 <head>
 </head>
@@ -64,7 +64,7 @@
                 contentType: 'application/json',
                 type: 'POST',
                 // url: '/api/student/search',
-                url: '/student/dt/search',
+                url: '/student/search/simpleQuery',
                 data: function (d) {
                     return JSON.stringify(d);
                 }
