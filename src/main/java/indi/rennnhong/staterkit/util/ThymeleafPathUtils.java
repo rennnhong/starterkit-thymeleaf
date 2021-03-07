@@ -1,7 +1,5 @@
 package indi.rennnhong.staterkit.util;
 
-import sun.plugin2.message.Message;
-
 import java.text.MessageFormat;
 
 public class ThymeleafPathUtils {
