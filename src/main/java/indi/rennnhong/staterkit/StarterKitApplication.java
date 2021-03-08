@@ -18,7 +18,7 @@ public class StarterKitApplication {
     public AuditorAware<String> auditorAware(){
         return new AuditorAwareImpl();
     }
-    //測試
+
     public static void main(String[] args) {
         SpringApplication.run(StarterKitApplication.class, args);
     }
