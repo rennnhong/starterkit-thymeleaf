@@ -1,7 +1,6 @@
 package indi.rennnhong.staterkit.module.student.model.entity;
 
 import indi.rennnhong.staterkit.persistence.BaseEntity;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
