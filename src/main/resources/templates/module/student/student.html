@@ -85,7 +85,8 @@
                     orderable: false, // 禁用排序
                     render: function (data, type, row, meta) {
                         //row指的是資料列物件 data變數相等於row.sysid
-                        return "<button id='btn-show-detail' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(" + data + ")' >detail</button>" + "<button id='btn-show-update' type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(" + data + ")' >update</button>";
+                        return "<button id='btn-show-detail' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(" + data + ")' >detail</button>" + "<button id='btn-show-update' type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(" + data + ")' >update</button>"
+                            + "<button id='btn-show-deleted' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeletedView(" + data + ")' >deleted</button>";
 
                     }
                 }
@@ -180,6 +181,30 @@
             e.preventDefault();
         }
 
+        var onBtnDeletedConfirmSubmit = function (e) {
+            $.ajax({
+                type: "DELETE",
+                url: '/student/' + $(this).find('#id').val(),
+                data: $(this).serialize(), // serializes the form's elements.
+                success: function (data, textStatus, xhr) {
+                    console.log(data);
+                    console.log(textStatus);
+                    console.log(xhr.getResponseHeader("content-type") );
+                    let ct = xhr.getResponseHeader("content-type")
+                    if (ct.indexOf('html') > -1) {
+                        appendDeletedFormHtml(data);
+                    }
+                    if (ct.indexOf('json') > -1) {
+                        let json = data;
+                        showSuccessToast('刪除成功');
+                        $('#modal-form-button').click();
+                        dataTable.ajax.reload();
+                    }
+                }
+            });
+            e.preventDefault();
+        }
+
         function appendCreateFormHtml(data) {
             $('#modal-body-form').html(data);
             $('#form-create').bind("submit", onBtnCreateConfirmSubmit);
@@ -192,6 +217,11 @@
         function appendUpdateFormHtml(data) {
             $('#modal-body-form').html(data);
             $('#form-update').bind("submit", onBtnUpdateConfirmSubmit);
+        }
+
+        function appendDeletedFormHtml(data) {
+            $('#modal-body-form').html(data);
+            $('#form-deleted').bind("submit", onBtnDeletedConfirmSubmit);
         }
 
         function showCreateView() {
@@ -221,6 +251,17 @@
                 .done(function (data) {
                     console.log(data);
                     appendUpdateFormHtml(data);
+                    formModal.modal('show');
+                });
+        }
+
+        function showDeletedView(id) {
+            $.get('/student/' + id + '/deleted', function (data) {
+                console.log(data);
+            })
+                .done(function (data) {
+                    console.log(data);
+                    appendDeletedFormHtml(data);
                     formModal.modal('show');
                 });
         }

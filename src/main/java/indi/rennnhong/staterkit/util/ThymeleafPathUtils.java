@@ -6,7 +6,7 @@ public class ThymeleafPathUtils {
     public static final String ROOT_PATH = "module";
 
     public enum FormType {
-        CREATE, DETAIL, UPDATE
+        CREATE, DETAIL, UPDATE, DELETED
     }
 
     public static String buildPath(String modulePath) {
@@ -27,7 +27,8 @@ public class ThymeleafPathUtils {
                 return MessageFormat.format(txtTemplate, buildViewPath(modulePath, modulePath), "update");
             case DETAIL:
                 return MessageFormat.format(txtTemplate, buildViewPath(modulePath, modulePath), "detail");
-
+            case DELETED:
+                return MessageFormat.format(txtTemplate, buildViewPath(modulePath, modulePath), "deleted");
         }
         return "";
     }
@@ -47,7 +48,8 @@ public class ThymeleafPathUtils {
                 return MessageFormat.format(txtTemplate, buildViewPath(modulePath, formType), "update_form");
             case DETAIL:
                 return MessageFormat.format(txtTemplate, buildViewPath(modulePath, formType), "detail_form");
-
+            case DELETED:
+                return MessageFormat.format(txtTemplate, buildViewPath(modulePath, formType), "deleted_form");
         }
         return "";
     }
@@ -61,12 +63,14 @@ public class ThymeleafPathUtils {
         System.out.println(buildViewPath(modulePath,FormType.CREATE));
         System.out.println(buildViewPath(modulePath,FormType.UPDATE));
         System.out.println(buildViewPath(modulePath,FormType.DETAIL));
+        System.out.println(buildViewPath(modulePath,FormType.DELETED));
 
         System.out.println(buildFragmentPath(modulePath,"my-fragment"));
 
         System.out.println(buildFragmentPath(modulePath,FormType.CREATE));
         System.out.println(buildFragmentPath(modulePath,FormType.UPDATE));
         System.out.println(buildFragmentPath(modulePath,FormType.DETAIL));
+        System.out.println(buildFragmentPath(modulePath,FormType.DELETED));
     }
 
 }

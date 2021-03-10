@@ -78,6 +78,15 @@ public class StudentController {
         return ThymeleafPathUtils.buildFragmentPath(modulePath, UPDATE);
     }
 
+    @GetMapping("{id}/deleted")
+    public String showDeletedView(@PathVariable("id") Long id, Model model) {
+        Student student = studentService.findOneById(id);
+        StudentUpdateCommand formData = new StudentUpdateCommand();
+        BeanUtils.copyProperties(student, formData);
+        model.addAttribute("formData", formData);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, DELETED);
+    }
+
     @PostMapping
     public String doCreate(
             HttpServletRequest request,
@@ -110,6 +119,13 @@ public class StudentController {
         }
 
         return ThymeleafPathUtils.buildFragmentPath(modulePath, UPDATE);
+    }
+
+    @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response doDeleted(@PathVariable("id") Long id){
+        studentService.deleteById(id);
+        return Response.ok().setPayload(id);
     }
 
     @PostMapping(value = "/create/success", produces = MediaType.APPLICATION_JSON_VALUE)
