@@ -97,8 +97,8 @@ public class StudentController {
             Student student = new Student();
             BeanUtils.copyProperties(formData, student);
             studentService.create(student);
-            request.setAttribute("id", student.getId());
-            return "forward:/student/create/success";
+            request.setAttribute("payload", student.getId());
+            return "forward:/student/result/success";
         }
         return ThymeleafPathUtils.buildFragmentPath(modulePath, CREATE);
     }
@@ -114,31 +114,16 @@ public class StudentController {
             Student student = studentService.findOneById(id);
             BeanUtils.copyProperties(formData, student);
             studentService.update(student);
-            request.setAttribute("id", student.getId());
-            return "forward:/student/update/success";
+            request.setAttribute("payload", student.getId());
+            return "forward:/student/result/success";
         }
-
         return ThymeleafPathUtils.buildFragmentPath(modulePath, UPDATE);
     }
 
     @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response doDeleted(@PathVariable("id") Long id){
+    public Response doDeleted(@PathVariable("id") Long id) {
         studentService.deleteById(id);
-        return Response.ok().setPayload(id);
-    }
-
-    @PostMapping(value = "/create/success", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response createSuccess(HttpServletRequest request) {
-        Long id = (Long) request.getAttribute("id");
-        return Response.ok().setPayload(id);
-    }
-
-    @PutMapping(value = "/update/success", produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response updateSuccess(HttpServletRequest request) {
-        Long id = (Long) request.getAttribute("id");
         return Response.ok().setPayload(id);
     }
 
