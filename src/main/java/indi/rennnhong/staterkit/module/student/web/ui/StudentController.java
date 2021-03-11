@@ -47,7 +47,7 @@ public class StudentController {
     public String page(Model model) {
         String[] path = {"level1", "level2", "level3"};
         model.addAttribute("list", Lists.newArrayList(path));
-        return ThymeleafPathUtils.buildPath(modulePath) + "/" + modulePath;
+        return ThymeleafPathUtils.buildViewPath(modulePath, modulePath);
     }
 
     @Autowired
