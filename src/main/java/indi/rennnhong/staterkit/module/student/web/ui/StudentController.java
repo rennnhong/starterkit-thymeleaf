@@ -7,6 +7,7 @@ import indi.rennnhong.staterkit.module.student.model.entity.Student;
 import indi.rennnhong.staterkit.module.student.service.StudentService;
 import indi.rennnhong.staterkit.module.student.web.command.StudentCreateCommand;
 import indi.rennnhong.staterkit.module.student.web.command.StudentUpdateCommand;
+import indi.rennnhong.staterkit.util.RouteUtils;
 import indi.rennnhong.staterkit.util.ThymeleafPathUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,14 +60,14 @@ public class StudentController {
     public String showDetailView(@PathVariable("id") Long id, Model model) {
         Student student = studentService.findOneById(id);
         model.addAttribute("student", student);
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, DETAIL);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", DETAIL);
     }
 
     @GetMapping("/create")
     public String showCreateView(Model model) {
         StudentCreateCommand formData = new StudentCreateCommand();
         model.addAttribute("formData", formData);
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, CREATE);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", CREATE);
     }
 
     @GetMapping("{id}/update")
@@ -75,7 +76,7 @@ public class StudentController {
         StudentUpdateCommand formData = new StudentUpdateCommand();
         BeanUtils.copyProperties(student, formData);
         model.addAttribute("formData", formData);
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, UPDATE);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", UPDATE);
     }
 
     @GetMapping("{id}/deleted")
@@ -84,7 +85,7 @@ public class StudentController {
         StudentUpdateCommand formData = new StudentUpdateCommand();
         BeanUtils.copyProperties(student, formData);
         model.addAttribute("formData", formData);
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, DELETED);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", DELETED);
     }
 
     @PostMapping
@@ -98,9 +99,9 @@ public class StudentController {
             BeanUtils.copyProperties(formData, student);
             studentService.create(student);
             request.setAttribute("payload", student.getId());
-            return "forward:/student/result/success";
+            return RouteUtils.forward("student", RouteUtils.Route.CREATE_SUCCESS);
         }
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, CREATE);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", CREATE);
     }
 
     @PutMapping("{id}")
@@ -115,9 +116,9 @@ public class StudentController {
             BeanUtils.copyProperties(formData, student);
             studentService.update(student);
             request.setAttribute("payload", student.getId());
-            return "forward:/student/result/success";
+            return RouteUtils.forward("student", RouteUtils.Route.UPDATE_SUCCESS);
         }
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, UPDATE);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", UPDATE);
     }
 
     @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
