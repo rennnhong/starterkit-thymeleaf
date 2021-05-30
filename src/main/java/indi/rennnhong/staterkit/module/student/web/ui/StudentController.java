@@ -27,8 +27,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
-
-import static indi.rennnhong.staterkit.util.ThymeleafPathUtils.FormType.*;
 import static org.springframework.util.StringUtils.hasText;
 
 @Controller
@@ -48,7 +46,7 @@ public class StudentController {
     public String page(Model model) {
         String[] path = {"level1", "level2", "level3"};
         model.addAttribute("list", Lists.newArrayList(path));
-        return ThymeleafPathUtils.buildViewPath(modulePath, modulePath);
+        return ThymeleafPathUtils.buildViewPath(modulePath, "home");
     }
 
     @Autowired
@@ -60,14 +58,15 @@ public class StudentController {
     public String showDetailView(@PathVariable("id") Long id, Model model) {
         Student student = studentService.findOneById(id);
         model.addAttribute("student", student);
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", DETAIL);
+        String s = ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-detail");
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-detail");
     }
 
     @GetMapping("/create")
     public String showCreateView(Model model) {
         StudentCreateCommand formData = new StudentCreateCommand();
         model.addAttribute("formData", formData);
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", CREATE);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-create");
     }
 
     @GetMapping("{id}/update")
@@ -76,16 +75,16 @@ public class StudentController {
         StudentUpdateCommand formData = new StudentUpdateCommand();
         BeanUtils.copyProperties(student, formData);
         model.addAttribute("formData", formData);
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", UPDATE);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-update");
     }
 
-    @GetMapping("{id}/deleted")
+    @GetMapping("{id}/delete")
     public String showDeletedView(@PathVariable("id") Long id, Model model) {
         Student student = studentService.findOneById(id);
         StudentUpdateCommand formData = new StudentUpdateCommand();
         BeanUtils.copyProperties(student, formData);
         model.addAttribute("formData", formData);
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", DELETED);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-delete");
     }
 
     @PostMapping
@@ -101,7 +100,7 @@ public class StudentController {
             request.setAttribute("payload", student.getId());
             return RouteUtils.forward("student", RouteUtils.Route.CREATE_SUCCESS);
         }
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", CREATE);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-create");
     }
 
     @PutMapping("{id}")
@@ -118,7 +117,7 @@ public class StudentController {
             request.setAttribute("payload", student.getId());
             return RouteUtils.forward("student", RouteUtils.Route.UPDATE_SUCCESS);
         }
-        return ThymeleafPathUtils.buildFragmentPath(modulePath, "student", UPDATE);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-update");
     }
 
     @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)

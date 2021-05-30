@@ -13,11 +13,9 @@
         <div class="col-12">
             <!-- Default box -->
             <div class="card card-outline card-primary">
-                <button
-                        type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-form-query">
-                    查詢
+                <button type="button" class="btn btn-default" onclick="showQueryView()">查詢</button>
+                <button id="btn_show_create" type="button" class="btn btn-default" onclick="showCreateView()">新增
                 </button>
-                <button id="btn_show_create" type="button" class="btn btn-default">新增</button>
                 <div class="card-header">
                     <h3 class="card-title">資料列表</h3>
                 </div>
@@ -44,18 +42,14 @@
         </div>
     </div>
     <div th:replace="resources/datatable"></div>
-    <div th:replace="module/student/student_form_query"></div>
-    <div th:replace="modal/modal_form"></div>
-    <!--    <div th:replace="/student_form_detail"></div>-->
-    <!--    <div th:replace="/student_form_create"></div>-->
+    <div th:replace="module/student/fragments/modals :: modal-query"></div>
+    <div th:replace="module/student/fragments/modals :: modal-empty"></div>
 
     <!-- page script -->
     <script>
-        var formModal;
-        var queryFormModal
-        // $(function () {
-        formModal = $('#modal-form');
-        queryFormModal = $('#modal-form-query');
+        var emptyModal;
+        emptyModal = $('#modal-empty');
+        queryModal = $('#modal-query');
 
         var dataTable = $('#datalist').DataTable({
             "autoWidth": false,
@@ -63,7 +57,6 @@
             ajax: {
                 contentType: 'application/json',
                 type: 'POST',
-                // url: '/api/student/search',
                 url: '/student/search/simpleQuery',
                 data: function (d) {
                     return JSON.stringify(d);
@@ -77,6 +70,7 @@
                     data: "name",
                 },
                 {
+
                     data: "age"
                 },
                 {
@@ -86,65 +80,43 @@
                     render: function (data, type, row, meta) {
                         //row指的是資料列物件 data變數相等於row.sysid
                         return "<button id='btn-show-detail' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(" + data + ")' >detail</button>" + "<button id='btn-show-update' type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(" + data + ")' >update</button>"
-                            + "<button id='btn-show-deleted' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeletedView(" + data + ")' >deleted</button>";
+                            + "<button id='btn-show-delete' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeleteView(" + data + ")' >delete</button>";
 
                     }
                 }
             ]
         });
 
+        // 查詢表單控制項
         var inputId = $('#form-query input#id');
         var inputName = $('#form-query input#name');
         var inputAge = $('#form-query input#age');
 
-        var onInputIdChange = function () {
-            console.log("onInputIdChange");
+        inputId.on('change', function () {
             dataTable.column(0).search(inputId.val())
-        };
-        var onInputNameChange = function () {
-            console.log("onInputNameChange");
+        });
+        inputName.on('change', function () {
             dataTable.column(1).search(inputName.val())
-        };
-        var onInputAgeChange = function () {
-            console.log("onInputAgeChange");
+        });
+        inputAge.on('change', function () {
             dataTable.column(2).search(inputAge.val())
-        };
+        });
 
-
-        inputId.on('change', onInputIdChange);
-        inputName.on('change', onInputNameChange);
-        inputAge.on('change', onInputAgeChange);
-
-        // btnQueryConfirm.submit(onBtnQueryConfirmSubmit);
-        // btnCreateConfirm.submit(onBtnCreateConfirmSubmit);
-
-
-        $('#form-query').submit(function (e) {
-            console.log("onBtnQueryConfirmSubmit");
+        //crud按鈕觸發事件
+        var onBtnQueryConfirmSubmit = function (e) {
             dataTable.draw();
-            queryFormModal.modal('hide');
+            queryModal.modal('hide');
             e.preventDefault();
-        });
-
-        $('#btn_show_create').click(function (e) {
-            showCreateView();
-        });
-
-
-        // });
-
+        }
         var onBtnCreateConfirmSubmit = function (e) {
             $.ajax({
                 type: "POST",
                 url: '/student',
                 data: $(this).serialize(), // serializes the form's elements.
                 success: function (data, textStatus, xhr) {
-                    // console.log(data);
-                    // console.log(textStatus);
-                    // console.log(xhr.getResponseHeader("content-type") );
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
-                        appendCreateFormHtml(data);
+                        setModalHtml(data);
                     }
                     if (ct.indexOf('json') > -1) {
                         // handle json here
@@ -163,12 +135,9 @@
                 url: '/student/' + $(this).find('#id').val(),
                 data: $(this).serialize(), // serializes the form's elements.
                 success: function (data, textStatus, xhr) {
-                    console.log(data);
-                    console.log(textStatus);
-                    console.log(xhr.getResponseHeader("content-type") );
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
-                        appendUpdateFormHtml(data);
+                        setModalHtml(data);
                     }
                     if (ct.indexOf('json') > -1) {
                         let json = data;
@@ -180,24 +149,20 @@
             });
             e.preventDefault();
         }
-
-        var onBtnDeletedConfirmSubmit = function (e) {
+        var onBtnDeleteConfirmSubmit = function (e) {
             $.ajax({
                 type: "DELETE",
                 url: '/student/' + $(this).find('#id').val(),
                 data: $(this).serialize(), // serializes the form's elements.
                 success: function (data, textStatus, xhr) {
-                    console.log(data);
-                    console.log(textStatus);
-                    console.log(xhr.getResponseHeader("content-type") );
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
-                        appendDeletedFormHtml(data);
+                        setModalHtml(data);
                     }
                     if (ct.indexOf('json') > -1) {
                         let json = data;
                         showSuccessToast('刪除成功');
-                        $('#modal-form-button').click();
+                        $('#modal-empty-button').click();
                         dataTable.ajax.reload();
                     }
                 }
@@ -205,65 +170,51 @@
             e.preventDefault();
         }
 
-        function appendCreateFormHtml(data) {
-            $('#modal-body-form').html(data);
-            $('#form-create').bind("submit", onBtnCreateConfirmSubmit);
-        }
 
-        function appendDetailFormHtml(data) {
+        $('#form-query').submit(onBtnQueryConfirmSubmit);
+
+        function setModalHtml(data) {
             $('#modal-body-form').html(data);
         }
 
-        function appendUpdateFormHtml(data) {
-            $('#modal-body-form').html(data);
-            $('#form-update').bind("submit", onBtnUpdateConfirmSubmit);
-        }
-
-        function appendDeletedFormHtml(data) {
-            $('#modal-body-form').html(data);
-            $('#form-deleted').bind("submit", onBtnDeletedConfirmSubmit);
-        }
-
+        //叫出Modal
         function showCreateView() {
             $.get('/student/create')
                 .done(function (data) {
-                    console.log(data);
-                    appendCreateFormHtml(data);
-                    formModal.modal('show');
+                    setModalHtml(data);
+                    $('#form-create').bind("submit", onBtnCreateConfirmSubmit);
+                    emptyModal.modal('show');
                 });
         }
 
         function showDetailView(id) {
-            $.get('/student/' + id, function (data) {
-                console.log(data);
-            })
+            $.get('/student/' + id,)
                 .done(function (data) {
-                    console.log(data);
-                    appendDetailFormHtml(data);
-                    formModal.modal('show');
+                    setModalHtml(data);
+                    emptyModal.modal('show');
                 });
         }
 
         function showUpdateView(id) {
-            $.get('/student/' + id + '/update', function (data) {
-                console.log(data);
-            })
+            $.get('/student/' + id + '/update',)
                 .done(function (data) {
-                    console.log(data);
-                    appendUpdateFormHtml(data);
-                    formModal.modal('show');
+                    setModalHtml(data);
+                    $('#form-update').bind("submit", onBtnUpdateConfirmSubmit);
+                    emptyModal.modal('show');
                 });
         }
 
-        function showDeletedView(id) {
-            $.get('/student/' + id + '/deleted', function (data) {
-                console.log(data);
-            })
+        function showDeleteView(id) {
+            $.get('/student/' + id + '/delete',)
                 .done(function (data) {
-                    console.log(data);
-                    appendDeletedFormHtml(data);
-                    formModal.modal('show');
+                    setModalHtml(data);
+                    $('#form-delete').bind("submit", onBtnDeleteConfirmSubmit);
+                    emptyModal.modal('show');
                 });
+        }
+
+        function showQueryView() {
+            queryModal.modal('show');
         }
 
         const Toast = Swal.mixin({
@@ -274,7 +225,6 @@
         });
 
         function showSuccessToast(title) {
-            console.log(title);
             Toast.fire({
                 icon: 'success',
                 title: title
@@ -284,6 +234,4 @@
     </script>
 </div>
 </body>
-
-
 </html>
