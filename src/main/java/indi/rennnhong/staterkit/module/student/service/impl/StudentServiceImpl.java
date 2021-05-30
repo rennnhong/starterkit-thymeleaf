@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,13 +27,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Long create(Student entity) {
+    public UUID create(Student entity) {
         Student student = repository.save(entity);
         return student.getId();
     }
 
     @Override
-    public List<Long> createBatch(Collection<Student> entities) {
+    public List<UUID> createBatch(Collection<Student> entities) {
         List<Student> students = repository.saveAll(entities);
         return convertToId(students);
     }
@@ -43,7 +44,7 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(UUID id) {
         repository.deleteById(id);
     }
 
@@ -53,20 +54,20 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public void deleteBatchById(Collection<Long> longs) {
+    public void deleteBatchById(Collection<UUID> longs) {
         List<Student> allById = repository.findAllById(longs);
         repository.deleteInBatch(allById);
     }
 
 
     @Override
-    public Long update(Student entity) {
+    public UUID update(Student entity) {
         Student student = repository.save(entity);
         return student.getId();
     }
 
     @Override
-    public List<Long> update(Collection<Student> entities) {
+    public List<UUID> update(Collection<Student> entities) {
         List<Student> students = repository.saveAll(entities);
         return convertToId(students);
     }
@@ -96,12 +97,12 @@ public class StudentServiceImpl implements StudentService {
         return repository.count(condition);
     }
 
-    private List<Long> convertToId(List<Student> students) {
+    private List<UUID> convertToId(List<Student> students) {
         return students.stream().map(student -> student.getId()).collect(Collectors.toList());
     }
 
     @Override
-    public Student findOneById(Long id) {
+    public Student findOneById(UUID id) {
         return repository.findById(id).get();
     }
 }

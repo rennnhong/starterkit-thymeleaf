@@ -79,13 +79,9 @@
                     width: "15%",
                     render: function (data, type, row, meta) {
                         //row指的是資料列物件 data變數相等於row.sysid
-                        return `<button id='btn-show-detail' class="btn btn-default btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(${data})' ><span class="fas fa-info-circle"></span></button> | `
-                            + `<button id='btn-show-update' class="btn btn-warning btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(${data})' ><span class="fas fa-edit"></span></button> | `
-                            + `<button id='btn-show-delete' class="btn btn-danger btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeleteView(${data})' ><span class="fas fa-trash-alt"></span></button>`;
-
-                        // return "<button id='btn-show-detail' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(" + data + ")' >detail</button>"
-                        //     + "<button id='btn-show-update' type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(" + data + ")' >update</button>"
-                        //     + "<button id='btn-show-delete' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeleteView(" + data + ")' >delete</button>";
+                        return `<button id='btn-show-detail' class="btn btn-default btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(&#39;${data}&#39;)' ><span class="fas fa-info-circle"></span></button> | `
+                            + `<button id='btn-show-update' class="btn btn-warning btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(&#39;${data}&#39;)' ><span class="fas fa-edit"></span></button> | `
+                            + `<button id='btn-show-delete' class="btn btn-danger btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeleteView(&#39;${data}&#39;)' ><span class="fas fa-trash-alt"></span></button>`;
 
                     }
                 }

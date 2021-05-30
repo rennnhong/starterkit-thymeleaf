@@ -27,6 +27,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+
 import static org.springframework.util.StringUtils.hasText;
 
 @Controller
@@ -55,7 +57,7 @@ public class StudentController {
     }
 
     @GetMapping("/{id}")
-    public String showDetailView(@PathVariable("id") Long id, Model model) {
+    public String showDetailView(@PathVariable("id") UUID id, Model model) {
         Student student = studentService.findOneById(id);
         model.addAttribute("student", student);
         String s = ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-detail");
@@ -70,7 +72,7 @@ public class StudentController {
     }
 
     @GetMapping("{id}/update")
-    public String showUpdateView(@PathVariable("id") Long id, Model model) {
+    public String showUpdateView(@PathVariable("id") UUID id, Model model) {
         Student student = studentService.findOneById(id);
         StudentUpdateCommand formData = new StudentUpdateCommand();
         BeanUtils.copyProperties(student, formData);
@@ -79,7 +81,7 @@ public class StudentController {
     }
 
     @GetMapping("{id}/delete")
-    public String showDeletedView(@PathVariable("id") Long id, Model model) {
+    public String showDeletedView(@PathVariable("id") UUID id, Model model) {
         Student student = studentService.findOneById(id);
         StudentUpdateCommand formData = new StudentUpdateCommand();
         BeanUtils.copyProperties(student, formData);
@@ -106,7 +108,7 @@ public class StudentController {
     @PutMapping("{id}")
     public String doUpdate(
             HttpServletRequest request,
-            @PathVariable("id") Long id,
+            @PathVariable("id") UUID id,
             @Valid @ModelAttribute("formData") StudentUpdateCommand formData,
             BindingResult bindingResult, Model model) {
 
@@ -122,7 +124,7 @@ public class StudentController {
 
     @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response doDeleted(@PathVariable("id") Long id) {
+    public Response doDeleted(@PathVariable("id") UUID id) {
         studentService.deleteById(id);
         return Response.ok().setPayload(id);
     }
