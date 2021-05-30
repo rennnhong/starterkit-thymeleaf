@@ -76,10 +76,16 @@
                     //這裡的data變數值為sysid，相等於row.sysid
                     data: "id",//資料行繫結屬性
                     orderable: false, // 禁用排序
+                    width: "15%",
                     render: function (data, type, row, meta) {
                         //row指的是資料列物件 data變數相等於row.sysid
-                        return "<button id='btn-show-detail' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(" + data + ")' >detail</button>" + "<button id='btn-show-update' type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(" + data + ")' >update</button>"
-                            + "<button id='btn-show-delete' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeleteView(" + data + ")' >delete</button>";
+                        return `<button id='btn-show-detail' class="btn btn-default btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(${data})' ><span class="fas fa-info-circle"></span></button> | `
+                            + `<button id='btn-show-update' class="btn btn-warning btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(${data})' ><span class="fas fa-edit"></span></button> | `
+                            + `<button id='btn-show-delete' class="btn btn-danger btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeleteView(${data})' ><span class="fas fa-trash-alt"></span></button>`;
+
+                        // return "<button id='btn-show-detail' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(" + data + ")' >detail</button>"
+                        //     + "<button id='btn-show-update' type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(" + data + ")' >update</button>"
+                        //     + "<button id='btn-show-delete' type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeleteView(" + data + ")' >delete</button>";
 
                     }
                 }
@@ -115,7 +121,7 @@
                 success: function (data, textStatus, xhr) {
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
-                        setModalHtml(data,'新增');
+                        setModalHtml(data, '新增');
                     }
                     if (ct.indexOf('json') > -1) {
                         // handle json here
@@ -136,7 +142,7 @@
                 success: function (data, textStatus, xhr) {
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
-                        setModalHtml(data,'修改');
+                        setModalHtml(data, '修改');
                     }
                     if (ct.indexOf('json') > -1) {
                         let json = data;
@@ -156,7 +162,7 @@
                 success: function (data, textStatus, xhr) {
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
-                        setModalHtml(data,'刪除');
+                        setModalHtml(data, '刪除');
                     }
                     if (ct.indexOf('json') > -1) {
                         let json = data;
@@ -173,7 +179,7 @@
 
         $('#form-query').submit(onBtnQueryConfirmSubmit);
 
-        function setModalHtml(data,title) {
+        function setModalHtml(data, title) {
             $('#modal-empty .modal-title').text(title)
             $('#modal-empty .modal-body').html(data);
         }
@@ -182,7 +188,7 @@
         function showCreateView() {
             $.get('/student/create')
                 .done(function (data) {
-                    setModalHtml(data,'新增');
+                    setModalHtml(data, '新增');
                     $('#form-create').bind("submit", onBtnCreateConfirmSubmit);
                     emptyModal.modal('show');
                 });
@@ -191,7 +197,7 @@
         function showDetailView(id) {
             $.get('/student/' + id,)
                 .done(function (data) {
-                    setModalHtml(data,'詳細資料');
+                    setModalHtml(data, '詳細資料');
                     emptyModal.modal('show');
                 });
         }
@@ -199,7 +205,7 @@
         function showUpdateView(id) {
             $.get('/student/' + id + '/update',)
                 .done(function (data) {
-                    setModalHtml(data,'修改');
+                    setModalHtml(data, '修改');
                     $('#form-update').bind("submit", onBtnUpdateConfirmSubmit);
                     emptyModal.modal('show');
                 });
@@ -208,7 +214,7 @@
         function showDeleteView(id) {
             $.get('/student/' + id + '/delete',)
                 .done(function (data) {
-                    setModalHtml(data,'刪除');
+                    setModalHtml(data, '刪除');
                     $('#form-delete').bind("submit", onBtnDeleteConfirmSubmit);
                     emptyModal.modal('show');
                 });
