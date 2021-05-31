@@ -1,13 +1,14 @@
 package indi.rennnhong.staterkit.module.student.web.command;
 
 import javax.validation.constraints.*;
+import java.util.UUID;
 
 /**
  * bean of create action
  */
 public class StudentUpdateCommand {
 
-    private Long id;
+    private UUID id;
 
     @NotEmpty
     private String name;
@@ -17,11 +18,11 @@ public class StudentUpdateCommand {
     @Max(value = 100)
     private Integer age;
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
