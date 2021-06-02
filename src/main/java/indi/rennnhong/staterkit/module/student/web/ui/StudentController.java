@@ -7,12 +7,14 @@ import indi.rennnhong.staterkit.module.student.model.entity.Student;
 import indi.rennnhong.staterkit.module.student.service.StudentService;
 import indi.rennnhong.staterkit.module.student.web.command.StudentCreateCommand;
 import indi.rennnhong.staterkit.module.student.web.command.StudentUpdateCommand;
+import indi.rennnhong.staterkit.module.student.web.ui.vo.StudentVO;
 import indi.rennnhong.staterkit.util.RouteUtils;
 import indi.rennnhong.staterkit.util.ThymeleafPathUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
+import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,11 +30,12 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.springframework.util.StringUtils.hasText;
 
 @Controller
-@RequestMapping(value = {"student", "/", ""})
+@RequestMapping(value = {"student"})
 public class StudentController {
 
     @Value("${custom.ui.thymeleaf.root-path}")
@@ -130,7 +133,7 @@ public class StudentController {
     }
 
     //注意:要加public，不然反射調用setDataTablesInput時會報錯
-    public static class SimpleQuery implements DtSpecification<Student> {
+    public static class SimpleQuery implements DtSpecification<Student, StudentVO> {
         private Integer id;
         private String name;
         private Integer age;
@@ -153,6 +156,18 @@ public class StudentController {
             id = (hasText(idFilter)) ? Integer.parseInt(idFilter) : null;
             name = (hasText(nameFilter)) ? nameFilter : null;
             age = (hasText(ageFilter)) ? Integer.parseInt(ageFilter) : null;
+        }
+
+        @Override
+        public List<StudentVO> setDataResults(List<Student> results) {
+            List<StudentVO> studentVoList = results.stream().map(student -> {
+                return StudentVO.builder()
+                        .id(student.getId())
+                        .name(student.getName())
+                        .age(student.getAge())
+                        .build();
+            }).collect(Collectors.toList());
+            return studentVoList;
         }
     }
 

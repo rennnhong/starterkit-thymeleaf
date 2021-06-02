@@ -3,7 +3,6 @@ package indi.rennnhong.staterkit.common.web.support;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.ReflectionUtils;
@@ -29,14 +28,14 @@ public class DtSpecificationFactory {
     private Map<String, Map<String, String>> dtSpecificationMap;
 
     // todo 處理反射異常
-    public Specification getSpecification(String handlerName, String specificationName, DataTablesInput input) {
+    public DtSpecification getSpecification(String handlerName, String specificationName, DataTablesInput input) {
         try {
             String controllerName = MessageFormat.format("{0}Controller", StringUtils.capitalize(handlerName));
             String specificationClassName = dtSpecificationMap.get(controllerName).get(specificationName);
             Class clazz = Class.forName(specificationClassName);
             Method setDataTablesInputMethod = ReflectionUtils.findMethod(clazz, "setDataTablesInput", DataTablesInput.class);
-            Constructor<Specification> constructor = ReflectionUtils.accessibleConstructor(clazz);
-            Specification instance = constructor.newInstance();
+            Constructor<DtSpecification> constructor = ReflectionUtils.accessibleConstructor(clazz);
+            DtSpecification instance = constructor.newInstance();
             ReflectionUtils.invokeMethod(
                     setDataTablesInputMethod,
                     instance,
