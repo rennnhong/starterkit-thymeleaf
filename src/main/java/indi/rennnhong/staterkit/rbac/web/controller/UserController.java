@@ -1,24 +1,43 @@
 package indi.rennnhong.staterkit.rbac.web.controller;
 
+import com.google.common.collect.Lists;
+import indi.rennnhong.staterkit.common.query.PageableResult;
 import indi.rennnhong.staterkit.common.response.ResponseBody;
+import indi.rennnhong.staterkit.common.utils.BindingResultHelper;
+import indi.rennnhong.staterkit.common.web.support.DtSpecification;
+import indi.rennnhong.staterkit.module.student.model.entity.Student;
+import indi.rennnhong.staterkit.rbac.entity.Role;
+import indi.rennnhong.staterkit.rbac.entity.User;
 import indi.rennnhong.staterkit.rbac.service.UserService;
 import indi.rennnhong.staterkit.rbac.service.dto.UserDto;
 import indi.rennnhong.staterkit.rbac.service.dto.UserEditDto;
-import indi.rennnhong.staterkit.common.query.PageableResult;
-import indi.rennnhong.staterkit.common.utils.BindingResultHelper;
+import indi.rennnhong.staterkit.rbac.web.command.UserCreateCommand;
+import indi.rennnhong.staterkit.rbac.web.command.UserUpdateCommand;
+import indi.rennnhong.staterkit.util.ThymeleafPathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
+import org.springframework.data.jpa.datatables.mapping.DataTablesOutput;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.validation.Valid;
-import java.util.Collection;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static indi.rennnhong.staterkit.common.response.ErrorMessages.INVALID_FIELDS_REQUEST;
+import static org.springframework.util.StringUtils.hasText;
 
 @RestController
 @RequestMapping("/api/users")
@@ -100,4 +119,44 @@ public class UserController {
 
     }
 
+    public static class SimpleQuery implements DtSpecification<User,UserDto> {
+        private Integer id;
+        private String userName;
+        private String roles;
+
+        @Override
+        public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+            List<Predicate> predicates = Lists.newArrayList();
+            if (Objects.nonNull(id)) predicates.add(cb.equal(root.get("id"), id));
+            if (Objects.nonNull(userName)) predicates.add(cb.equal(root.get("userName"), userName));
+            if (Objects.nonNull(roles)) predicates.add(cb.equal(root.get("roles"), roles));
+
+            return cb.and(predicates.toArray(new Predicate[predicates.size()]));
+        }
+
+        @Override
+        public void setDataTablesInput(DataTablesInput input) {
+            String idFilter = input.getColumn("id").getSearch().getValue();
+            String nameFilter = input.getColumn("userName").getSearch().getValue();
+            String rolesFilter = input.getColumn("roles").getSearch().getValue();
+            id = (hasText(idFilter)) ? Integer.parseInt(idFilter) : null;
+            userName = (hasText(nameFilter)) ? nameFilter : null;
+            roles = (hasText(rolesFilter)) ? rolesFilter : null;
+        }
+
+        @Override
+        public List<UserDto> setDataResults(List<User> input) {
+            List<UserDto> result = new ArrayList<UserDto>();
+            for (int i = 0; i < input.size(); i++) {
+                User user = input.get(i);
+                UserDto userDto = new UserDto();
+                userDto.setId(user.getId());
+                userDto.setUserName(user.getUserName());
+                List<String> collect = user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toList());
+                userDto.setRoles(collect);
+                result.add(userDto);
+            }
+            return result;
+        }
+    }
 }
