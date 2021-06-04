@@ -22,6 +22,6 @@ public class UserEditDto {
 
     private String city;
 
-    private List<String> roleIds;
+    private List<String> roles;
 
 }

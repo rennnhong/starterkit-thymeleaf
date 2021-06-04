@@ -112,7 +112,7 @@
         var onBtnCreateConfirmSubmit = function (e) {
             $.ajax({
                 type: "POST",
-                url: '/api/users',
+                url: '/users',
                 data: $(this).serialize(), // serializes the form's elements.
                 success: function (data, textStatus, xhr) {
                     let ct = xhr.getResponseHeader("content-type")
@@ -134,18 +134,17 @@
             $.ajax({
                 type: "PUT",
                 url: '/users/' + $(this).find('#id').val(),
-                data: $(this).serialize(), // serializes the form's elements.
-                // dataType: 'json',
-                contentType: 'application/json',
+                data: $(this).serialize(),
                 success: function (data, textStatus, xhr) {
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
                         setModalHtml(data, '修改');
+                        showUpdateView(json.id);
                     }
                     if (ct.indexOf('json') > -1) {
                         let json = data;
                         showSuccessToast('修改成功');
-                        showDetailView(json.payload);
+                        showDetailView(json.id);
                         dataTable.ajax.reload();
                     }
                 }
@@ -155,7 +154,7 @@
         var onBtnDeleteConfirmSubmit = function (e) {
             $.ajax({
                 type: "DELETE",
-                url: '/api/users/' + $(this).find('#id').val(),
+                url: '/users/' + $(this).find('#id').val(),
                 data: $(this).serialize(), // serializes the form's elements.
                 success: function (data, textStatus, xhr) {
                     let ct = xhr.getResponseHeader("content-type")

@@ -3,7 +3,11 @@ package indi.rennnhong.staterkit.rbac.web.ui;
 import com.google.common.collect.Lists;
 import indi.rennnhong.staterkit.common.response.ResponseBody;
 import indi.rennnhong.staterkit.common.utils.BindingResultHelper;
+import indi.rennnhong.staterkit.common.web.Response;
 import indi.rennnhong.staterkit.common.web.support.DtSpecification;
+import indi.rennnhong.staterkit.module.student.model.entity.Student;
+import indi.rennnhong.staterkit.module.student.web.command.StudentCreateCommand;
+import indi.rennnhong.staterkit.module.student.web.command.StudentUpdateCommand;
 import indi.rennnhong.staterkit.rbac.entity.User;
 import indi.rennnhong.staterkit.rbac.service.RoleService;
 import indi.rennnhong.staterkit.rbac.service.UserService;
@@ -12,12 +16,14 @@ import indi.rennnhong.staterkit.rbac.service.dto.UserDto;
 import indi.rennnhong.staterkit.rbac.service.dto.UserEditDto;
 import indi.rennnhong.staterkit.rbac.web.command.UserCreateCommand;
 import indi.rennnhong.staterkit.rbac.web.command.UserUpdateCommand;
+import indi.rennnhong.staterkit.util.RouteUtils;
 import indi.rennnhong.staterkit.util.ThymeleafPathUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -28,6 +34,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -57,8 +64,11 @@ public class UserController {
 
     @GetMapping("/create")
     public String showCreateView(Model model) {
-        UserCreateCommand formData = new UserCreateCommand();
-        model.addAttribute("formData", formData);
+        UserCreateCommand userCreateCommand = new UserCreateCommand();
+        model.addAttribute("user", userCreateCommand);
+        Collection<RoleDto> roleDtos = roleService.getAll();
+        List<List<RoleDto>> roleList = Lists.partition(roleDtos.stream().collect(Collectors.toList()), 2);
+        model.addAttribute("roleList", roleList);
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-create");
     }
 
@@ -67,8 +77,8 @@ public class UserController {
         UserDto user = userService.getById(id);
         model.addAttribute("user", user);
         Collection<RoleDto> roleDtos = roleService.getAll();
-        List<List<RoleDto>> roles = Lists.partition(roleDtos.stream().collect(Collectors.toList()), 2);
-        model.addAttribute("roles", roles);
+        List<List<RoleDto>> roleList = Lists.partition(roleDtos.stream().collect(Collectors.toList()), 2);
+        model.addAttribute("roleList", roleList);
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-update");
     }
 
@@ -77,8 +87,8 @@ public class UserController {
         UserDto user = userService.getById(id);
         model.addAttribute("user", user);
         Collection<RoleDto> roleDtos = roleService.getAll();
-        List<List<RoleDto>> roles = Lists.partition(roleDtos.stream().collect(Collectors.toList()), 2);
-        model.addAttribute("roles", roles);
+        List<List<RoleDto>> roleList = Lists.partition(roleDtos.stream().collect(Collectors.toList()), 2);
+        model.addAttribute("roleList", roleList);
         String s = ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-detail");
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-detail");
     }
@@ -92,10 +102,26 @@ public class UserController {
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-delete");
     }
 
+    @PostMapping
+    public String doCreate(
+            HttpServletRequest request,
+            @Valid @ModelAttribute("user") UserCreateCommand formData,
+            BindingResult bindingResult, Model model) {
+
+        if (!bindingResult.hasErrors()) {
+            UserDto userDto = new UserDto();
+            BeanUtils.copyProperties(formData, userDto);
+            UserDto userDtoSave = userService.save(userDto);
+            request.setAttribute("payload", userDtoSave.getId());
+            return RouteUtils.forward("user", RouteUtils.Route.CREATE_SUCCESS);
+        }
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-create");
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity updateUser(
             @PathVariable("id") UUID id,
-            @Valid @RequestBody UserEditDto userEditDto,
+            @Valid @ModelAttribute("user") UserUpdateCommand userUpdateCommand,
             BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             Object errorMap = BindingResultHelper.toHashMap(bindingResult);
@@ -103,9 +129,17 @@ public class UserController {
                     ResponseBody.newErrorMessageBody(INVALID_FIELDS_REQUEST, errorMap),
                     HttpStatus.BAD_REQUEST);
         }
-
+        UserEditDto userEditDto = new UserEditDto();
+        BeanUtils.copyProperties(userUpdateCommand, userEditDto);
         UserDto updatedUserDto = userService.update(id, userEditDto);
         return new ResponseEntity(updatedUserDto, HttpStatus.OK);
+    }
+
+    @org.springframework.web.bind.annotation.ResponseBody
+    @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response doDeleted(@PathVariable("id") UUID id) {
+        userService.delete(id);
+        return Response.ok().setPayload(id);
     }
 
     public static class SimpleQuery implements DtSpecification<User, UserDto> {

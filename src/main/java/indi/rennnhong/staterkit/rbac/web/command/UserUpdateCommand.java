@@ -6,7 +6,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -20,7 +20,7 @@ public class UserUpdateCommand {
     private String userName;
 
     @NotNull
-    private Set<Role> roles;
+    private List<String> roles;
 
     public UUID getId() {
         return id;
@@ -38,14 +38,13 @@ public class UserUpdateCommand {
         this.userName = userName;
     }
 
-    public Set<Role> getRoles() {
+    public List<String> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<String> roles) {
         this.roles = roles;
     }
-
 }
 
 

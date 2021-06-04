@@ -2,22 +2,41 @@
       xmlns:th="http://www.thymeleaf.org">
 <!--新增視窗-->
 <form id="form-create" class="form-horizontal"
-      th:fragment="form-create"
-      th:object="${formData}">
+      th:fragment="form-create">
     <div class="card-body">
         <div class="form-group row">
             <label for="userName" class="col-sm-2 col-form-label">userName</label>
             <div class="col-sm-10">
-                <input th:field="*{userName}" type="text" class="form-control" placeholder="userName">
+                <input th:field="${user.userName}" type="text" class="form-control" placeholder="userName">
             </div>
-            <small class="text-red" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></small>
+            <small class="text-red" th:if="${#fields.hasErrors('user.userName')}" th:errors="${user.userName}"></small>
         </div>
         <div class="form-group row">
-            <label for="roles" class="col-sm-2 col-form-label">roles</label>
+            <label for="account" class="col-sm-2 col-form-label">account</label>
             <div class="col-sm-10">
-                <input th:field="*{roles}" type="text" class="form-control" placeholder="roles">
+                <input th:field="${user.account}" type="text" class="form-control" placeholder="account">
             </div>
-            <small class="text-red" th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}"></small>
+            <small class="text-red" th:if="${#fields.hasErrors('user.account')}" th:errors="${user.account}"></small>
+        </div>
+        <div class="form-group row">
+            <label for="password" class="col-sm-2 col-form-label">password</label>
+            <div class="col-sm-10">
+                <input th:field="${user.password}" type="password" class="form-control" placeholder="password">
+            </div>
+            <small class="text-red" th:if="${#fields.hasErrors('user.password')}" th:errors="${user.password}"></small>
+        </div>
+        <div class="row">
+            <label for="roles" class="col-sm-3 col-form-label">roles</label>
+            <div class="row">
+                <!-- radio -->
+                <div class="col-sm-6" th:each="roleGroups:${roleList}">
+                    <div class="form-group" th:each="role:${roleGroups}" style="display: inline-block">
+                        <input class="form-check-input" type="checkbox" name="roles" th:value="${role.id}"/>
+                        <label class="form-check-label" th:text="${role.name}" ></label>
+                    </div>
+                </div>
+            </div>
+            <small class="text-red" th:if="${#fields.hasErrors('user.roles')}" th:errors="${user.roles}"></small>
         </div>
         <div class="modal-footer justify-content-between">
             <button id="btn-create-close" type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
@@ -39,15 +58,15 @@
         <div class="form-group row">
             <label for="userName" class="col-sm-2 col-form-label">userName</label>
             <div class="col-sm-10">
-                <input th:field="*{user.userName}" type="text" class="form-control" placeholder="userName">
+                <input th:field="${user.userName}" type="text" class="form-control" placeholder="userName">
             </div>
-            <small class="text-red" th:if="${#fields.hasErrors('user.userName')}" th:errors="*{user.userName}"></small>
+            <small class="text-red" th:if="${#fields.hasErrors('user.userName')}" th:errors="${user.userName}"></small>
         </div>
         <div class="row">
             <label for="roles" class="col-sm-3 col-form-label">roles</label>
             <div class="row">
                 <!-- radio -->
-                <div class="col-sm-6" th:each="roleGroups:${roles}">
+                <div class="col-sm-6" th:each="roleGroups:${roleList}">
                     <div class="form-group" th:each="role:${roleGroups}" style="display: inline-block">
                         <input class="form-check-input" type="checkbox" name="roles" th:value="${role.id}"
                                th:checked="${#lists.contains(user.roles, #strings.toString(role.id))}" />
@@ -55,7 +74,7 @@
                     </div>
                 </div>
             </div>
-            <small class="text-red" th:if="${#fields.hasErrors('user.roles')}" th:errors="*{user.roles}"></small>
+            <small class="text-red" th:if="${#fields.hasErrors('user.roles')}" th:errors="${user.roles}"></small>
         </div>
         <div class="modal-footer justify-content-between">
             <button id="btn-create-close" type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
@@ -98,7 +117,7 @@
             <label for="roles" class="col-sm-3 col-form-label">roles</label>
             <div class="row">
                 <!-- radio -->
-                <div class="col-sm-6" th:each="roleGroups:${roles}">
+                <div class="col-sm-6" th:each="roleGroups:${roleList}">
                     <div class="form-group" th:each="role:${roleGroups}" style="display: inline-block">
                         <input class="form-check-input" type="checkbox" name="roles" th:value="${role.id}" disabled
                                th:checked="${#lists.contains(user.roles, #strings.toString(role.id))}" />
