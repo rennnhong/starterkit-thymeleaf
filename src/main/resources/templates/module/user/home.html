@@ -133,8 +133,10 @@
         var onBtnUpdateConfirmSubmit = function (e) {
             $.ajax({
                 type: "PUT",
-                url: '/api/users/' + $(this).find('#id').val(),
+                url: '/users/' + $(this).find('#id').val(),
                 data: $(this).serialize(), // serializes the form's elements.
+                // dataType: 'json',
+                contentType: 'application/json',
                 success: function (data, textStatus, xhr) {
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {

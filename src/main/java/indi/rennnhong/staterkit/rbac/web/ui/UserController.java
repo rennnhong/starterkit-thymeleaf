@@ -1,12 +1,15 @@
 package indi.rennnhong.staterkit.rbac.web.ui;
 
 import com.google.common.collect.Lists;
+import indi.rennnhong.staterkit.common.response.ResponseBody;
+import indi.rennnhong.staterkit.common.utils.BindingResultHelper;
 import indi.rennnhong.staterkit.common.web.support.DtSpecification;
 import indi.rennnhong.staterkit.rbac.entity.User;
 import indi.rennnhong.staterkit.rbac.service.RoleService;
 import indi.rennnhong.staterkit.rbac.service.UserService;
 import indi.rennnhong.staterkit.rbac.service.dto.RoleDto;
 import indi.rennnhong.staterkit.rbac.service.dto.UserDto;
+import indi.rennnhong.staterkit.rbac.service.dto.UserEditDto;
 import indi.rennnhong.staterkit.rbac.web.command.UserCreateCommand;
 import indi.rennnhong.staterkit.rbac.web.command.UserUpdateCommand;
 import indi.rennnhong.staterkit.util.ThymeleafPathUtils;
@@ -14,19 +17,22 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static indi.rennnhong.staterkit.common.response.ErrorMessages.INVALID_FIELDS_REQUEST;
 import static org.springframework.util.StringUtils.hasText;
 
 @Controller
@@ -59,9 +65,10 @@ public class UserController {
     @GetMapping("{id}/update")
     public String showUpdateView(@PathVariable("id") UUID id, Model model) {
         UserDto user = userService.getById(id);
-        UserUpdateCommand formData = new UserUpdateCommand();
-        BeanUtils.copyProperties(user, formData);
-        model.addAttribute("formData", formData);
+        model.addAttribute("user", user);
+        Collection<RoleDto> roleDtos = roleService.getAll();
+        List<List<RoleDto>> roles = Lists.partition(roleDtos.stream().collect(Collectors.toList()), 2);
+        model.addAttribute("roles", roles);
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-update");
     }
 
@@ -83,6 +90,22 @@ public class UserController {
         BeanUtils.copyProperties(user, formData);
         model.addAttribute("formData", formData);
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-delete");
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity updateUser(
+            @PathVariable("id") UUID id,
+            @Valid @RequestBody UserEditDto userEditDto,
+            BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            Object errorMap = BindingResultHelper.toHashMap(bindingResult);
+            return new ResponseEntity(
+                    ResponseBody.newErrorMessageBody(INVALID_FIELDS_REQUEST, errorMap),
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        UserDto updatedUserDto = userService.update(id, userEditDto);
+        return new ResponseEntity(updatedUserDto, HttpStatus.OK);
     }
 
     public static class SimpleQuery implements DtSpecification<User, UserDto> {
