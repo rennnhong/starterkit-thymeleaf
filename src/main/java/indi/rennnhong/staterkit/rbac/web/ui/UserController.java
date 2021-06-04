@@ -76,8 +76,7 @@ public class UserController {
     public String showUpdateView(@PathVariable("id") UUID id, Model model) {
         UserDto user = userService.getById(id);
         model.addAttribute("user", user);
-        Collection<RoleDto> roleDtos = roleService.getAll();
-        List<List<RoleDto>> roleList = Lists.partition(roleDtos.stream().collect(Collectors.toList()), 2);
+        List<List<RoleDto>> roleList = getRoleOptionGroups();
         model.addAttribute("roleList", roleList);
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-update");
     }
@@ -86,8 +85,7 @@ public class UserController {
     public String showDetailView(@PathVariable("id") UUID id, Model model) {
         UserDto user = userService.getById(id);
         model.addAttribute("user", user);
-        Collection<RoleDto> roleDtos = roleService.getAll();
-        List<List<RoleDto>> roleList = Lists.partition(roleDtos.stream().collect(Collectors.toList()), 2);
+        List<List<RoleDto>> roleList = getRoleOptionGroups();
         model.addAttribute("roleList", roleList);
         String s = ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-detail");
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-detail");
@@ -115,6 +113,8 @@ public class UserController {
             request.setAttribute("payload", userDtoSave.getId());
             return RouteUtils.forward("user", RouteUtils.Route.CREATE_SUCCESS);
         }
+        List<List<RoleDto>> roleList = getRoleOptionGroups();
+        model.addAttribute("roleList", roleList);
         return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-create");
     }
 
@@ -140,6 +140,14 @@ public class UserController {
     public Response doDeleted(@PathVariable("id") UUID id) {
         userService.delete(id);
         return Response.ok().setPayload(id);
+    }
+
+    private List<RoleDto> getRoleOptions() {
+        return roleService.getAll().stream().collect(Collectors.toList());
+    }
+
+    private List<List<RoleDto>> getRoleOptionGroups() {
+        return Lists.partition(getRoleOptions(), 2);
     }
 
     public static class SimpleQuery implements DtSpecification<User, UserDto> {

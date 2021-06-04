@@ -1,6 +1,7 @@
 package indi.rennnhong.staterkit.rbac.web.command;
 
 import indi.rennnhong.staterkit.rbac.entity.Role;
+import lombok.Data;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -12,6 +13,7 @@ import java.util.UUID;
 /**
  * bean of create action
  */
+@Data
 public class UserUpdateCommand {
 
     private UUID id;
@@ -22,29 +24,6 @@ public class UserUpdateCommand {
     @NotNull
     private List<String> roles;
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getUserName() {
-        return userName;
-    }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
-    public List<String> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
-    }
 }
 
 

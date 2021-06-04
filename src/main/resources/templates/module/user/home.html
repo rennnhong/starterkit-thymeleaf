@@ -118,6 +118,7 @@
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
                         setModalHtml(data, '新增');
+                        $('#form-create').bind("submit", onBtnCreateConfirmSubmit);
                     }
                     if (ct.indexOf('json') > -1) {
                         // handle json here
@@ -139,7 +140,7 @@
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
                         setModalHtml(data, '修改');
-                        showUpdateView(json.id);
+                        $('#form-update').bind("submit", onBtnUpdateConfirmSubmit);
                     }
                     if (ct.indexOf('json') > -1) {
                         let json = data;
@@ -160,6 +161,7 @@
                     let ct = xhr.getResponseHeader("content-type")
                     if (ct.indexOf('html') > -1) {
                         setModalHtml(data, '刪除');
+                        $('#form-delete').bind("submit", onBtnDeleteConfirmSubmit);
                     }
                     if (ct.indexOf('json') > -1) {
                         let json = data;
@@ -177,6 +179,7 @@
         $('#form-query').submit(onBtnQueryConfirmSubmit);
 
         function setModalHtml(data, title) {
+            //需重新監聽按鈕事件
             $('#modal-empty .modal-title').text(title)
             $('#modal-empty .modal-body').html(data);
         }
