@@ -70,7 +70,19 @@
                     data: "userName",
                 },
                 {
-                    data: "roles"
+                    data: "roles",
+                    render: function (roles, type, row, meta) {
+                        let result='';
+                        for (const role of roles) {
+                            if(role == '系統管理員'){
+                                result += `<span class="badge  badge-danger">${role}</span> `
+                            }
+                            else{
+                                result += `<span class="badge  badge-success">${role}</span> `
+                            }
+                        }
+                        return result
+                    }
                 },
                 {
                     //這裡的data變數值為sysid，相等於row.sysid
