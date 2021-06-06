@@ -22,7 +22,7 @@ public class UserCreateCommand {
     @NotEmpty
     private String password;
 
-    @NotNull
+    @NotEmpty
     private List<String> roles = new ArrayList<>();
 
 }
