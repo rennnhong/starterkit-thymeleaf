@@ -119,20 +119,21 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateUser(
+    public String updateUser(
+            HttpServletRequest request,
             @PathVariable("id") UUID id,
             @Valid @ModelAttribute("user") UserUpdateCommand userUpdateCommand,
-            BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            Object errorMap = BindingResultHelper.toHashMap(bindingResult);
-            return new ResponseEntity(
-                    ResponseBody.newErrorMessageBody(INVALID_FIELDS_REQUEST, errorMap),
-                    HttpStatus.BAD_REQUEST);
+            BindingResult bindingResult, Model model) {
+        if (!bindingResult.hasErrors()) {
+            UserEditDto userEditDto = new UserEditDto();
+            BeanUtils.copyProperties(userUpdateCommand, userEditDto);
+            UserDto updatedUserDto = userService.update(id, userEditDto);
+            request.setAttribute("payload",updatedUserDto.getId());
+            return RouteUtils.forward("user", RouteUtils.Route.UPDATE_SUCCESS);
         }
-        UserEditDto userEditDto = new UserEditDto();
-        BeanUtils.copyProperties(userUpdateCommand, userEditDto);
-        UserDto updatedUserDto = userService.update(id, userEditDto);
-        return new ResponseEntity(updatedUserDto, HttpStatus.OK);
+        List<List<RoleDto>> roleList = getRoleOptionGroups();
+        model.addAttribute("roleList", roleList);
+        return ThymeleafPathUtils.buildFragmentPath(modulePath, "fragments/modal_forms", "form-update");
     }
 
     @org.springframework.web.bind.annotation.ResponseBody

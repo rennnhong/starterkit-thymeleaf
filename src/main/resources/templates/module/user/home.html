@@ -160,7 +160,7 @@
                     if (ct.indexOf('json') > -1) {
                         let json = data;
                         showSuccessToast('修改成功');
-                        showDetailView(json.id);
+                        showDetailView(json.payload);
                         dataTable.ajax.reload();
                     }
                 }
