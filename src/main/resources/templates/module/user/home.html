@@ -24,7 +24,7 @@
                     <table id="datalist" class="table table-bordered table-hover display">
                         <thead>
                         <tr>
-                            <th>Id</th>
+                            <th>No</th>
                             <th>userName</th>
                             <th>roles</th>
                             <th>操作</th>
@@ -64,7 +64,10 @@
             },
             "columns": [
                 {
-                    data: "id"
+                    "data" : "id",
+                    "render" : function(data, type, full, meta){
+                        return meta.row + 1 + meta.settings._iDisplayStart;
+                    }
                 },
                 {
                     data: "userName",
