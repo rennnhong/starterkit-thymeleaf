@@ -1,13 +1,8 @@
 package indi.rennnhong.staterkit.rbac.web.ui;
 
 import com.google.common.collect.Lists;
-import indi.rennnhong.staterkit.common.response.ResponseBody;
-import indi.rennnhong.staterkit.common.utils.BindingResultHelper;
 import indi.rennnhong.staterkit.common.web.Response;
 import indi.rennnhong.staterkit.common.web.support.DtSpecification;
-import indi.rennnhong.staterkit.module.student.model.entity.Student;
-import indi.rennnhong.staterkit.module.student.web.command.StudentCreateCommand;
-import indi.rennnhong.staterkit.module.student.web.command.StudentUpdateCommand;
 import indi.rennnhong.staterkit.rbac.entity.User;
 import indi.rennnhong.staterkit.rbac.service.RoleService;
 import indi.rennnhong.staterkit.rbac.service.UserService;
@@ -22,9 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.jpa.datatables.mapping.DataTablesInput;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,7 +32,6 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static indi.rennnhong.staterkit.common.response.ErrorMessages.INVALID_FIELDS_REQUEST;
 import static org.springframework.util.StringUtils.hasText;
 
 @Controller

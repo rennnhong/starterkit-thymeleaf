@@ -1,12 +1,9 @@
 package indi.rennnhong.staterkit.rbac.web.command;
 
-import indi.rennnhong.staterkit.rbac.entity.Role;
 import lombok.Data;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,8 +18,8 @@ public class UserUpdateCommand {
     @NotEmpty
     private String userName;
 
-    @NotNull
-    private List<String> roles;
+    @NotEmpty
+    private List<String> roles = new ArrayList<>();
 
 }
 

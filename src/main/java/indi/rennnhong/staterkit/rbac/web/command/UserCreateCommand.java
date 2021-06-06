@@ -1,10 +1,8 @@
 package indi.rennnhong.staterkit.rbac.web.command;
 
-import indi.rennnhong.staterkit.rbac.entity.Role;
 import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
