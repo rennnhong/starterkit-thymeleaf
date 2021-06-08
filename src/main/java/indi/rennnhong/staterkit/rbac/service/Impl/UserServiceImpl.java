@@ -108,7 +108,7 @@ class UserServiceImpl implements UserService{
 
         //處理Roles
         user.getRoles().clear();
-        if (!ObjectUtils.isEmpty(dto.getRoleIds())) setUserRoles(user, dto.getRoleIds());
+        if (!ObjectUtils.isEmpty(dto.getRoles())) setUserRoles(user, dto.getRoles());
 
         User updatedUser = userRepository.save(user);
         return userMapper.toDto(updatedUser);

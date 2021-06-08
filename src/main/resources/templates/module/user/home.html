@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/layout">
+
+<head>
+</head>
+
+<body>
+<div class="container-fluid" layout:fragment="content">
+    <div class="row">
+        <div class="col-12">
+            <!-- Default box -->
+            <div class="card card-outline card-primary">
+                <button type="button" class="btn btn-default" onclick="showQueryView()">查詢</button>
+                <button id="btn_show_create" type="button" class="btn btn-default" onclick="showCreateView()">新增
+                </button>
+                <div class="card-header">
+                    <h3 class="card-title">資料列表</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="datalist" class="table table-bordered table-hover display">
+                        <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>userName</th>
+                            <th>roles</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div th:replace="resources/datatable"></div>
+    <div th:replace="module/user/fragments/modals :: modal-query"></div>
+    <div th:replace="module/user/fragments/modals :: modal-empty"></div>
+
+    <!-- page script -->
+    <script>
+        var emptyModal;
+        emptyModal = $('#modal-empty');
+        queryModal = $('#modal-query');
+
+        var dataTable = $('#datalist').DataTable({
+            "autoWidth": false,
+            serverSide: true,
+            ajax: {
+                contentType: 'application/json',
+                type: 'POST',
+                url: '/user/search/simpleQuery',
+                data: function (d) {
+                    return JSON.stringify(d);
+                }
+            },
+            "columns": [
+                {
+                    "data" : "id",
+                    "render" : function(data, type, full, meta){
+                        return meta.row + 1 + meta.settings._iDisplayStart;
+                    }
+                },
+                {
+                    data: "userName",
+                },
+                {
+                    data: "roles",
+                    render: function (roles, type, row, meta) {
+                        let result='';
+                        for (const role of roles) {
+                            if(role == '系統管理員'){
+                                result += `<span class="badge  badge-danger">${role}</span> `
+                            }
+                            else{
+                                result += `<span class="badge  badge-success">${role}</span> `
+                            }
+                        }
+                        return result
+                    }
+                },
+                {
+                    //這裡的data變數值為sysid，相等於row.sysid
+                    data: "id",//資料行繫結屬性
+                    orderable: false, // 禁用排序
+                    width: "15%",
+                    render: function (data, type, row, meta) {
+                        //row指的是資料列物件 data變數相等於row.sysid
+                        return `<button id='btn-show-detail' class="btn btn-default btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showDetailView(&#39;${data}&#39;)' ><span class="fas fa-info-circle"></span></button> | `
+                            + `<button id='btn-show-update' class="btn btn-warning btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showUpdateView(&#39;${data}&#39;)' ><span class="fas fa-edit"></span></button> | `
+                            + `<button id='btn-show-delete' class="btn btn-danger btn-sm" type='button' data-toggle='modal' data-target='#model-form'  onclick='showDeleteView(&#39;${data}&#39;)' ><span class="fas fa-trash-alt"></span></button>`;
+
+                    }
+                }
+            ]
+        });
+
+        // 查詢表單控制項
+        var qId = $('#form-query input#q_id');
+        var qName = $('#form-query input#q_userName');
+        var qAge = $('#form-query input#q_roles');
+
+        qId.on('change', function () {
+            dataTable.column(0).search(qId.val())
+        });
+        qName.on('change', function () {
+            dataTable.column(1).search(qName.val())
+        });
+        qAge.on('change', function () {
+            dataTable.column(2).search(qAge.val())
+        });
+
+        //crud按鈕觸發事件
+        var onBtnQueryConfirmSubmit = function (e) {
+            dataTable.draw();
+            queryModal.modal('hide');
+            e.preventDefault();
+        }
+        var onBtnCreateConfirmSubmit = function (e) {
+            $.ajax({
+                type: "POST",
+                url: '/users',
+                data: $(this).serialize(), // serializes the form's elements.
+                success: function (data, textStatus, xhr) {
+                    let ct = xhr.getResponseHeader("content-type")
+                    if (ct.indexOf('html') > -1) {
+                        setModalHtml(data, '新增');
+                        $('#form-create').bind("submit", onBtnCreateConfirmSubmit);
+                    }
+                    if (ct.indexOf('json') > -1) {
+                        // handle json here
+                        let json = data;
+                        showSuccessToast('新增成功');
+                        showDetailView(json.payload);
+                        dataTable.ajax.reload();
+                    }
+                }
+            });
+            e.preventDefault();
+        }
+        var onBtnUpdateConfirmSubmit = function (e) {
+            $.ajax({
+                type: "PUT",
+                url: '/users/' + $(this).find('#id').val(),
+                data: $(this).serialize(),
+                success: function (data, textStatus, xhr) {
+                    let ct = xhr.getResponseHeader("content-type")
+                    if (ct.indexOf('html') > -1) {
+                        setModalHtml(data, '修改');
+                        $('#form-update').bind("submit", onBtnUpdateConfirmSubmit);
+                    }
+                    if (ct.indexOf('json') > -1) {
+                        let json = data;
+                        showSuccessToast('修改成功');
+                        showDetailView(json.payload);
+                        dataTable.ajax.reload();
+                    }
+                }
+            });
+            e.preventDefault();
+        }
+        var onBtnDeleteConfirmSubmit = function (e) {
+            $.ajax({
+                type: "DELETE",
+                url: '/users/' + $(this).find('#id').val(),
+                data: $(this).serialize(), // serializes the form's elements.
+                success: function (data, textStatus, xhr) {
+                    let ct = xhr.getResponseHeader("content-type")
+                    if (ct.indexOf('html') > -1) {
+                        setModalHtml(data, '刪除');
+                        $('#form-delete').bind("submit", onBtnDeleteConfirmSubmit);
+                    }
+                    if (ct.indexOf('json') > -1) {
+                        let json = data;
+                        showSuccessToast('刪除成功');
+                        $('#modal-empty-button').click();
+                        dataTable.ajax.reload();
+                        emptyModal.modal('hide');
+                    }
+                }
+            });
+            e.preventDefault();
+        }
+
+
+        $('#form-query').submit(onBtnQueryConfirmSubmit);
+
+        function setModalHtml(data, title) {
+            //需重新監聽按鈕事件
+            $('#modal-empty .modal-title').text(title)
+            $('#modal-empty .modal-body').html(data);
+        }
+
+        //叫出Modal
+        function showCreateView() {
+            $.get('/users/create')
+                .done(function (data) {
+                    setModalHtml(data, '新增');
+                    $('#form-create').bind("submit", onBtnCreateConfirmSubmit);
+                    emptyModal.modal('show');
+                });
+        }
+
+        function showDetailView(id) {
+            $.get('/users/' + id + '/detail',)
+                .done(function (data) {
+                    setModalHtml(data, '詳細資料');
+                    emptyModal.modal('show');
+                });
+        }
+
+        function showUpdateView(id) {
+            $.get('/users/' + id + '/update',)
+                .done(function (data) {
+                    setModalHtml(data, '修改');
+                    $('#form-update').bind("submit", onBtnUpdateConfirmSubmit);
+                    emptyModal.modal('show');
+                });
+        }
+
+        function showDeleteView(id) {
+            $.get('/users/' + id + '/delete',)
+                .done(function (data) {
+                    setModalHtml(data, '刪除');
+                    $('#form-delete').bind("submit", onBtnDeleteConfirmSubmit);
+                    emptyModal.modal('show');
+                });
+        }
+
+        function showQueryView() {
+            queryModal.modal('show');
+        }
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        function showSuccessToast(title) {
+            Toast.fire({
+                icon: 'success',
+                title: title
+            })
+        }
+
+    </script>
+</div>
+</body>
+</html>

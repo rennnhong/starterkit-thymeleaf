@@ -60,7 +60,8 @@ public class User extends AuditableEntity<String> {
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer("User{");
-        sb.append("userName='").append(userName).append('\'');
+        sb.append("id='").append(id).append('\'');
+        sb.append(", userName='").append(userName).append('\'');
         sb.append(", account='").append(account).append('\'');
         sb.append(", password='").append(password).append('\'');
         sb.append(", birthday=").append(birthday);
