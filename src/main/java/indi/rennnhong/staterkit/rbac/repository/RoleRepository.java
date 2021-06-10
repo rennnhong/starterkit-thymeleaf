@@ -2,12 +2,14 @@ package indi.rennnhong.staterkit.rbac.repository;
 
 import indi.rennnhong.staterkit.common.BaseRepository;
 import indi.rennnhong.staterkit.rbac.entity.Role;
+import indi.rennnhong.staterkit.rbac.entity.User;
+import org.springframework.data.jpa.datatables.repository.DataTablesRepository;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-public interface RoleRepository extends BaseRepository<Role, UUID> {
+public interface RoleRepository extends BaseRepository<Role, UUID>, DataTablesRepository<Role,UUID> {
 
     List<Role> findAllByIdIn(List<UUID> ids);
 

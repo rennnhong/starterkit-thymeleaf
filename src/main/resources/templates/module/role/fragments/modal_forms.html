@@ -1,0 +1,99 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<!--新增視窗-->
+<form id="form-create" class="form-horizontal"
+      th:fragment="form-create">
+    <div class="card-body">
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">name</label>
+            <div class="col-sm-10">
+                <input th:field="${role.name}" type="text" class="form-control" placeholder="name">
+            </div>
+            <small class="text-red" th:if="${#fields.hasErrors('role.name')}" th:errors="${role.name}"></small>
+        </div>
+        <div class="form-group row">
+            <label for="code" class="col-sm-2 col-form-label">code</label>
+            <div class="col-sm-10">
+                <input th:field="${role.code}" type="text" class="form-control" placeholder="code">
+            </div>
+            <small class="text-red" th:if="${#fields.hasErrors('role.code')}" th:errors="${role.code}"></small>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button id="btn-create-close" type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+            <button id="btn-create-confirm" type="submit" class="btn btn-primary">確定</button>
+        </div>
+    </div>
+</form>
+
+<!--修改視窗-->
+<form id="form-update" class="form-horizontal"
+      th:fragment="form-update">
+    <div class="card-body">
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <input th:field="*{role.id}" type="hidden" class="form-control" placeholder="Id" disabled>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">name</label>
+            <div class="col-sm-10">
+                <input th:field="${role.name}" type="text" class="form-control" placeholder="name">
+            </div>
+            <small class="text-red" th:if="${#fields.hasErrors('role.name')}" th:errors="${role.name}"></small>
+        </div>
+        <div class="form-group row">
+            <label for="code" class="col-sm-2 col-form-label">code</label>
+            <div class="col-sm-10">
+                <input th:field="${role.code}" type="text" class="form-control" placeholder="code">
+            </div>
+            <small class="text-red" th:if="${#fields.hasErrors('role.code')}" th:errors="${role.code}"></small>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button id="btn-create-close" type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+            <button id="btn-create-confirm" type="submit" class="btn btn-primary">確定</button>
+        </div>
+    </div>
+</form>
+
+<!--刪除視窗-->
+<form id="form-delete" class="form-horizontal"
+      th:fragment="form-delete"
+      th:object="${formData}">
+    <div class="card-body">
+        <input th:field="*{id}" type="hidden" class="form-control" placeholder="Id" readonly>
+        <div style="text-align:center;color:#ff0000;font-size:18px;">是否確定刪除</div>
+        <div class="modal-footer justify-content-between">
+            <button id="btn-create-close" type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            <button id="btn-create-confirm" type="submit" class="btn btn-danger">確定</button>
+        </div>
+    </div>
+</form>
+
+<!--詳細資料視窗-->
+<form id="form-detail" class="form-horizontal"
+      th:fragment="form-detail">
+    <div class="card-body">
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <input th:field="*{role.id}" type="hidden" class="form-control" placeholder="Id" disabled>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="name" class="col-sm-2 col-form-label">name</label>
+            <div class="col-sm-10">
+                <input th:field="*{role.name}" type="text" class="form-control" placeholder="name" disabled>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="code" class="col-sm-2 col-form-label">code</label>
+            <div class="col-sm-10">
+                <input th:field="*{role.code}" type="text" class="form-control" placeholder="code" disabled>
+            </div>
+        </div>
+        <div class="modal-footer justify-content-between">
+            <button id="btn-detail-close" type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+        </div>
+    </div>
+</form>
+
+</html>
