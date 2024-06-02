@@ -20,7 +20,7 @@ public class DataInitializer {
     @PostConstruct
     public void init() {
         Faker faker = new Faker();
-        for (long i = 1; i <= 1000; i++) {
+        for (long i = 1; i <= 30; i++) {
             Student student = new Student();
 //            student.setId(i);
             student.setName(faker.name().name());
